@@ -85,6 +85,7 @@ class LLMTestGenerator(AbstractGenerator):
         """
         with open(filename, "a") as file:
             file.write(test_function_code)
+            file.close()
         print(f"Test function written to {filename}")
         
 
