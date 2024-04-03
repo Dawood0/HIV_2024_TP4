@@ -23,7 +23,9 @@ import importlib
 puts=[closest_integer, file_name_check, find_closest_elements, numerical_letter_grade, separate_paren_groups]
 puts_names=['closest_integer', 'file_name_check', 'find_closest_elements', 'numerical_letter_grade', 'separate_paren_groups']
 
-
+model_name = "Salesforce/codet5-large-ntp-py"
+tokenizer = AutoTokenizer.from_pretrained(model_name) #tokenizer#AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Python-hf")#
+model = T5ForConditionalGeneration.from_pretrained(model_name)
 
 def q_1():
     tests=[test_closest_integer, test_file_name_check, test_find_closest_elements, test_numerical_letter_grade, test_separate_paren_groups]
@@ -38,6 +40,7 @@ def q_1():
         except:pass
         i+=1
 # q_1()
+
 
 def q_2():
     model_name = "Salesforce/codet5-large-ntp-py"
@@ -78,11 +81,11 @@ def q_2():
         coverage_data = executor2._execute_input(put)
         print(f"Coverage data for {puts_names[i]}")
         print(coverage_data)
+        try:print(coverage_data['coverage']['covered_branches']/coverage_data['coverage']['num_branches'])
+        except:pass
         i+=1
         # break
 # q_2()
-
-
 
 
 def q_3():
@@ -114,9 +117,7 @@ def q_3():
         executor = AbstractExecutor(put)
         prompt_generator = PromptGenerator(put)
 
-        model_name = "Salesforce/codet5-large-ntp-py"
-        tokenizer = AutoTokenizer.from_pretrained(model_name) #tokenizer#AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Python-hf")#
-        model = T5ForConditionalGeneration.from_pretrained(model_name) 
+
 
         llm_generator = LLMTestGenerator(model, tokenizer, put)
         prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples[i]])
@@ -152,9 +153,7 @@ def q_3():
         try:print(coverage_data['coverage']['covered_branches']/coverage_data['coverage']['num_branches'])
         except:pass
         i+=1
-
 # q_3()
-
 
 
 def q_4():
@@ -215,31 +214,31 @@ def q_4():
 
     i=4
     for put in puts[i:]:
-        # executor = AbstractExecutor(put)
-        # prompt_generator = PromptGenerator(put)
+        executor = AbstractExecutor(put)
+        prompt_generator = PromptGenerator(put)
 
         # model_name = "Salesforce/codet5-large-ntp-py"
         # tokenizer = AutoTokenizer.from_pretrained(model_name) #tokenizer#AutoTokenizer.from_pretrained("codellama/CodeLlama-7b-Python-hf")#
         # model = T5ForConditionalGeneration.from_pretrained(model_name) 
 
-        # llm_generator = LLMTestGenerator(model, tokenizer, put)
-        # # prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples2[i]])
-        # # prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples[i],few_shot_examples2[i]])
-        # prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples[i],few_shot_examples2[i],few_shot_examples3[i]])
+        llm_generator = LLMTestGenerator(model, tokenizer, put)
+        # prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples2[i]])
+        # prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples[i],few_shot_examples2[i]])
+        prompt = prompt_generator.generate_prompt(few_shot_examples=[few_shot_examples[i],few_shot_examples2[i],few_shot_examples3[i]])
 
-        # # print(f"THE PROMPT {prompt}")
-        # test, test_name = llm_generator.create_test_function(prompt)
+        # print(f"THE PROMPT {prompt}")
+        test, test_name = llm_generator.create_test_function(prompt)
 
-        # # remove the last line of test
+        # remove the last line of test
 
-        # # test = test.split("\n")[:-1]
-        # # test = "\n".join(test)+'\n'
+        # test = test.split("\n")[:-1]
+        # test = "\n".join(test)+'\n'
         
         filename = "test_generated.py"
         test_name= 'test_'+puts_names[i]
-        # llm_generator.write_test_to_file(test, filename=filename)
+        llm_generator.write_test_to_file(test, filename=filename)
         # input('presssomehting')
-        # input('finished training and writing test to file check it for mistakes, press enter to continue...\n')
+        input('finished training and writing test to file check it for mistakes, press enter to continue...\n')
         module_name = filename.split(".")[0]
         function_name = test_name
 
